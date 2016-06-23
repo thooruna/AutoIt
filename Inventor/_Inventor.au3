@@ -4,25 +4,25 @@ Global $sInventorTitle = "Autodesk Inventor"
 Global $sInventorFrame = "[CLASS:AfxFrameOrView90u; INSTANCE:1],[CLASS:AfxFrameOrView110u; INSTANCE:2]"
 
 Func _Inventor_FrameGetPos()
-	Local $aPos
+	Local $aPosF
 	Local $aFrame = StringSplit($sInventorFrame, ",")
 	For $vFrame In $aFrame
-		$aPos = ControlGetPos($sInventorTitle, "", $vFrame)
-		If IsArray($aPos) Then
-			Return $aPos
-			Exit
+		$aPosF = ControlGetPos($sInventorTitle, "", $vFrame)
+		If IsArray($aPosF) Then
+			Return $aPosF
 		EndIf
     Next
 EndFunc
 
 Func _Inventor_FrameExists()
-	Local $aPos = _Inventor_FrameGetPos()
-	Return IsArray($aPos)
+	$aPosF = _Inventor_FrameGetPos()
+	Local $sTitle = WinGetTitle("[ACTIVE]")
+	Return ((StringLeft($sTitle, 4) = "test") Or (StringLeft($sTitle, StringLen($sInventorTitle)) = $sInventorTitle)) And IsArray($aPosF)
 EndFunc
 
 Func _Inventor_GetPos()
-	Local $aPos = WinGetPos($sInventorTitle, "")
-	Return $aPos
+	Local $aPosI = WinGetPos($sInventorTitle, "")
+	Return $aPosI
 EndFunc
 
 Func _Inventor_Active()

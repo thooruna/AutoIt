@@ -6,12 +6,13 @@
 
 #include "_Inventor.au3"
 
-; Tray
+Opt("MouseCoordMode", 1)
 Opt("TrayOnEventMode", 1)
-Opt("TrayMenuMode", 1) ; Default tray menu items (Script Paused/Exit) will not be shown.
+Opt("TrayMenuMode", 1)
 
-   Local $idButton1, $idButton2, $idButton3, $idButton4
-   Local $idButton5, $idButtonclose
+
+Global $idButton1, $idButton2, $idButton3, $idButton4
+Global $idButton5, $idButtonclose
 
 Func RunInventorMacro($strModule, $strFunction)
 	; Get a reference to Inventor.  This assumes Inventor is running.
@@ -41,17 +42,7 @@ Func RunInventorMacro($strModule, $strFunction)
 	If @error Then TrayTip ( "Error", "Inventor VBA Error 5", 1, 3)
 EndFunc   ;==>RunInventorMacro
 
-Func ToolBarMove($hGUI)
-	If _Inventor_Exists() Then
-		Local $aPosI = _Inventor_GetPos()
-		Local $aPosF = _Inventor_FrameGetPos()
-		If IsArray($aPosI) and IsArray($aPosF) Then
-			WinMove($hGUI, "",  $aPosI[0] + $aPosF[0] + 10, $aPosI[1] + $aPosF[1] + 2)
-		EndIf
-	EndIf
-EndFunc
-
-Func CreateToolBar()
+Func _InventorToolBar_CreateToolBar()
 	Local $iHeight = 40
 	Local $aPos = _Inventor_FrameGetPos()
 	Local $hGUI = GUICreate("test", $iHeight*6, $iHeight, $aPos[0], $aPos[1], $WS_POPUP, BitOr($WS_EX_TOPMOST, $WS_EX_TRANSPARENT, $WS_EX_TOOLWINDOW),0)
@@ -75,16 +66,39 @@ Func CreateToolBar()
 	Return $hGUI
 EndFunc
 
+Func _InventorToolBar_Display($hGUI)
+	If _Inventor_Exists() Then
+		Local $aPosI = _Inventor_GetPos()
+		Local $aPosF = _Inventor_FrameGetPos()
+		If IsArray($aPosI) and IsArray($aPosF) Then
+			WinMove($hGUI, "",  $aPosI[0] + $aPosF[0] + 10, $aPosI[1] + $aPosF[1] + 2)
+		EndIf
+	EndIf
+
+	If _Inventor_FrameExists() and _InventorToolBar_MouseInRegion() Then
+		GUISetState(@SW_SHOW)
+	Else
+		GUISetState(@SW_HIDE)
+	EndIf
+EndFunc
+
+Func _InventorToolBar_MouseInRegion()
+	Local $aPosI = _Inventor_GetPos()
+	Local $aPosF = _Inventor_FrameGetPos()
+	Local $aPosM = MouseGetPos()
+
+	If ($aPosM[0] >= $aPosI[0] + $aPosF[0]) And ($aPosM[0] <= $aPosI[0] + $aPosF[0] + $aPosF[2]) And _
+	   ($aPosM[1] >= $aPosI[1] + $aPosF[1]) And ($aPosM[1] <= $aPosI[1] + $aPosF[1] + 150) Then
+		Return True
+	EndIf
+EndFunc
+
 Func _Main()
-   Local $hGUI = CreateToolBar()
+	Local $hGUI = _InventorToolBar_CreateToolBar()
 
 	; Run the GUI until the dialog is closed
 	While 1
-		If _Inventor_FrameExists() Then
-			GUISetState(@SW_SHOW)
-		Else
-			GUISetState(@SW_HIDE)
-		EndIf
+		_InventorToolBar_Display($hGUI)
 
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
@@ -103,8 +117,6 @@ Func _Main()
 				ExitLoop
 			Case Else
 		EndSwitch
-
-		ToolBarMove($hGUI)
 	Wend
 
 	GUIDelete()
