@@ -34,7 +34,7 @@ Func InventorToolbar_Create()
 	For $i = 0 To UBound($g_aButtons, $UBOUND_ROWS) - 1
 		$g_aButtons[$i][1] = GUICtrlCreateButton($g_aButtons[$i][0], $g_iSize * $i, 0, $g_iSize, $g_iSize, $BS_BITMAP)
 
-		Local $sIcon = $sPath & $g_aButtons[$i][0] & ".bmp"
+		Local $sIcon = $sPath & $g_sModule & "." & $g_aButtons[$i][0] & ".bmp"
 		If FileExists($sIcon) Then
 			GUICtrlSetImage(-1, $sIcon)
 		EndIF
