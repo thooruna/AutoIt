@@ -61,9 +61,10 @@ Func InventorToolbar_Display()
 	EndIf
 
 	If _Inventor_FrameExists($g_sToolbarName) and InventorToolbar_MouseInRegion($aPosM, $aPosI, $aPosF) Then
-		GUISetState(@SW_SHOW)
+	;If _Inventor_FrameActive() and InventorToolbar_MouseInRegion($aPosM, $aPosI, $aPosF) Then
+		GUISetState(@SW_SHOW, $g_hGUI)
 	Else
-		GUISetState(@SW_HIDE)
+		GUISetState(@SW_HIDE, $g_hGUI)
 	EndIf
 EndFunc
 
@@ -91,13 +92,14 @@ Func Main()
 			$iMsg = GUIGetMsg()
 			$iButton = _ArraySearch($g_aButtons, $iMsg, 0, 0, 0, 2, 1, 1)
 			If $iButton >= 0 Then
+				GUISetState(@SW_HIDE, $g_hGUI)
 				_Inventor_MacroExecute($g_sModule, $g_aButtons[$iButton][0])
 			EndIf
 		Else
 			InventorToolbar_Terminate()
 		EndIf
 
-		Sleep(100)
+		;Sleep(100)
 	Wend
 
 	InventorToolbar_Terminate()
